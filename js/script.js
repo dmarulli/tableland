@@ -7,7 +7,8 @@ function generateData(count, min_height, max_height){
   data = []
   for (i = 0; i <= count; i++) {
     data.push({
-      y : randomFromInterval(max_height, min_height)
+      y : randomFromInterval(max_height, min_height),
+      x : randomFromInterval(0, width)
     });
   }
   return data
@@ -31,15 +32,12 @@ function drawSky() {
   .enter()
   .append("rect")
   .attr("y", function(d) {return d.y} )
-  .attr("x", function(d) {
-    x = randomFromInterval(0, width)
-    return x
-  })
+  .attr("x", function(d) {return d.x} )
   .attr("height", function(d) {return randomFromInterval(20,40) })
   .attr("width", function(d){return randomFromInterval(40,80)})
   // .attr("r", function(d) {return randomFromInterval(20,40)})
-  .attr("fill", function(d,i){return sky_color(d.y);});
-
+  .attr("fill", function(d){
+    return d3.rgb(sky_color(d.y)).darker((width-d.x)/500);});
 }
 
 function drawDesert() {
@@ -61,13 +59,13 @@ function drawDesert() {
   .enter()
   .append("rect")
   .attr("y", function(d) {return d.y} )
-  .attr("x", function(d) {
-    x = randomFromInterval(0, width)
-    return x
-  })
+  .attr("x", function(d) {return d.x} )
   .attr("width", function(d) {return randomFromInterval(40,80) })
   .attr("height", function(d){return randomFromInterval(20,40)})
-  .attr("fill", function(d,i){return d3.rgb(desert_color(d.y)).darker(3)});
+  .attr("fill", function(d){
+    return d3.rgb(desert_color(d.y)).darker(3 + (width-d.x)/500);
+    // return d3.rgb(desert_color(d.y)).darker(3)
+  });
 
 }
 
@@ -96,7 +94,6 @@ function drawMensa(mesa_x, mesa_y, mesa_height, tightness, shadow, stump_start, 
     } else {
       x = (mesa_x + (tightness/31250)*randomFromInterval(-1,1)*(height/2 - d.y)**2)
     }
-
     return x
   })
   .attr("height", function(d) {
@@ -114,7 +111,9 @@ function drawMensa(mesa_x, mesa_y, mesa_height, tightness, shadow, stump_start, 
     return w })
   .attr("width", function(d){
     return randomFromInterval(10,20)})
-  .attr("fill", function(d){return d3.rgb(mesa_color(d.y)).darker(shadow)});
+  .attr("fill", function(d){
+    // console.log(this)
+    return d3.rgb(mesa_color(d.y)).darker(1 + d.y/250 + (width-d3.select(this).attr("x"))/500)});
 
 }
 
