@@ -23,7 +23,7 @@ function drawSky() {
   .attr("height", height)
   .attr("opacity", .6)
 
-  molecule_count = 100000
+  molecule_count = 10000
   var sky_color = d3.scaleSequential(d3.interpolateMagma)
   .domain([0, (3/2)*height])
   molecules = sky.selectAll("rect");
@@ -38,6 +38,32 @@ function drawSky() {
   // .attr("r", function(d) {return randomFromInterval(20,40)})
   .attr("fill", function(d){
     return d3.rgb(sky_color(d.y)).darker((width-d.x)/500);});
+}
+
+function drawStars(){
+  twinkle = canvas
+  .append("g")
+  .attr("class", "stars")
+  .attr("width", width)
+  .attr("height", height)
+
+  star_count = 50
+  var star_color = "white"
+  stars = twinkle.selectAll("rect");
+  stars
+  .data(generateData(star_count, height, 0))
+  .enter()
+  .append("rect")
+  .attr("y", function(d) {return d.y} )
+  .attr("x", function(d) {return d.x} )
+  .attr("width", function(d) {return randomFromInterval(2,2) })
+  .attr("height", function(d){return randomFromInterval(2,2)})
+  .attr("fill", function(){
+    return d3.rgb(star_color);
+  })
+  .attr("opacity", function(d){
+    return 10/d.y
+  })
 }
 
 function drawDesert() {
@@ -67,6 +93,33 @@ function drawDesert() {
     // return d3.rgb(desert_color(d.y)).darker(3)
   });
 
+}
+
+function drawPlants(){
+  plants_height = (5/6)*height
+
+  plants = canvas
+  .append("g")
+  .attr("class", "shrubs")
+  .attr("width", width)
+  .attr("height", plants_height)
+  .attr("opacity", 1)
+
+  shrub_count = 30
+  var shrub_color = d3.scaleSequential(d3.interpolateYlGn)
+  .domain([0, shrub_count])
+  shrubs = plants.selectAll("rect");
+  shrubs
+  .data(generateData(shrub_count, height, plants_height))
+  .enter()
+  .append("rect")
+  .attr("y", function(d) {return d.y} )
+  .attr("x", function(d) {return d.x} )
+  .attr("width", function(d) {return randomFromInterval(d.y/400,d.y/400) })
+  .attr("height", function(d){return randomFromInterval(d.y/400,d.y/400)})
+  .attr("fill", function(d, i){
+    return d3.rgb(shrub_color(i)).darker(3 + d.y/250 + (width-d.x)/500);
+  });
 }
 
 
@@ -130,7 +183,10 @@ function main() {
   .attr("height", height)
 
   drawSky()
+  drawStars()
+
   drawDesert()
+  drawPlants()
 
   mesa_x = (8/30)*width
   mesa_y = (16/18)*height
