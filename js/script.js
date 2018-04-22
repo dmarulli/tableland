@@ -42,58 +42,6 @@ function drawSky() {
 
 }
 
-
-function drawMensa(mesa_x, mesa_y, mesa_height) {
-  // mesa_x = (1/3)*width
-  // mesa_y = (16/18)*height
-  // mesa_height = (2/3)*height
-
-
-  mesa = canvas
-  .append("g")
-  .attr("class", "mesa")
-  .attr("width", width)
-  .attr("height", height)
-  .attr("opacity", 1)
-
-  rock_count = 10000
-  var mesa_color = d3.scaleSequential(d3.interpolateOranges)
-  .domain([(6/5)*height, mesa_height])
-  rocks = mesa.selectAll("rect");
-  rocks
-  .data(generateData(rock_count, mesa_y, mesa_height))
-  .enter()
-  .append("rect")
-  .attr("y", function(d) {return d.y} )
-  .attr("x", function(d) {
-    if (d.y < (10/9)*mesa_height) {
-      x = (mesa_x + 125*randomFromInterval(-1,1))
-    } else {
-      x = (mesa_x + .004*randomFromInterval(-1,1)*(height/2 - d.y)**2)
-    }
-
-    return x
-  })
-  .attr("height", function(d) {
-    if (d.y < (10/9)*mesa_height) {
-      sampler = randomFromInterval(0,100)
-      if (sampler > 4){
-        w = 0
-      } else {
-        w = randomFromInterval(35,40)
-      }
-    } else {
-      w = randomFromInterval(20,40)
-    }
-
-    return w })
-  .attr("width", function(d){
-    return randomFromInterval(10,20)})
-  .attr("fill", function(d){return d3.rgb(mesa_color(d.y)).darker(4)});
-
-}
-
-
 function drawDesert() {
   desert_height = (5/6)*height
 
@@ -124,6 +72,54 @@ function drawDesert() {
 }
 
 
+function drawMensa(mesa_x, mesa_y, mesa_height, tightness, shadow, stump_start, rock_height) {
+
+  mesa = canvas
+  .append("g")
+  .attr("class", "mesa")
+  .attr("width", width)
+  .attr("height", height)
+  .attr("opacity", 1)
+
+  rock_count = 10000
+  var mesa_color = d3.scaleSequential(d3.interpolateOranges)
+  .domain([(4/3)*mesa_y, mesa_height])
+  rocks = mesa.selectAll("rect");
+  rocks
+  .data(generateData(rock_count, mesa_y, mesa_height))
+  .enter()
+  .append("rect")
+  .attr("y", function(d) {return d.y} )
+  .attr("x", function(d) {
+    if (d.y < stump_start) {
+      x = (mesa_x + tightness*randomFromInterval(-1,1))
+    } else {
+      x = (mesa_x + (tightness/31250)*randomFromInterval(-1,1)*(height/2 - d.y)**2)
+    }
+
+    return x
+  })
+  .attr("height", function(d) {
+    if (d.y < (10/9)*mesa_height) {
+      sampler = randomFromInterval(0,100)
+      if (sampler > 4){
+        w = 0
+      } else {
+        w = randomFromInterval(rock_height*2, rock_height*2)
+      }
+    } else {
+      w = randomFromInterval(rock_height, rock_height*2)
+    }
+
+    return w })
+  .attr("width", function(d){
+    return randomFromInterval(10,20)})
+  .attr("fill", function(d){return d3.rgb(mesa_color(d.y)).darker(shadow)});
+
+}
+
+
+
 function main() {
 
   width =  window.innerWidth;
@@ -139,12 +135,20 @@ function main() {
 
   mesa_x = (8/30)*width
   mesa_y = (16/18)*height
-  mesa_height = (2/3)*height
-  drawMensa(mesa_x, mesa_y, mesa_height)
+  mesa_height = (75/100)*mesa_y
+  tightness = 100
+  shadow = 5
+  stump_start = 10/9 * mesa_height
+  rock_height = 20
+  drawMensa(mesa_x, mesa_y, mesa_height, tightness, shadow, stump_start, rock_height)
 
-  mesa_x = (2/3)*width
-  mesa_y = (16/18)*height
-  mesa_height = (2/3)*height
-  drawMensa(mesa_x, mesa_y, mesa_height)
+  mesa_x = (22/30)*width
+  mesa_y = (5/6)*height
+  mesa_height = (44/60)*height
+  tightness = 60
+  shadow = 3.75
+  stump_start = (92/100)*mesa_y
+  rock_height = 10
+  drawMensa(mesa_x, mesa_y, mesa_height, tightness, shadow, stump_start, rock_height)
 
 }
